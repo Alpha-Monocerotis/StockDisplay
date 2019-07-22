@@ -23,8 +23,8 @@ ADDED = '''<form method="post" action="/stock">
             </div>
             </form>'''
 
-stock_data = pd.read_csv('Stock/NameAddr.csv')
-# todo [lmy] 修改为名称路径文件 2019-07-22 09:40
+stock_data = pd.read_csv('Stock/data/stocks.csv', encoding='gb18030', header=None)
+
 
 class Refresh_page(View):
 
@@ -42,8 +42,8 @@ class Refresh_page(View):
         stocks = []
         for i in range(len(stock_data)):
             newStock = Stock()
-            newStock.name = stock_data['name'].values[i]
-            newStock.file = stock_data['address'].values[i]
+            newStock.name = stock_data[3].values[i]
+            newStock.file = 'Stock' + stock_data[7].values[i][1:]
             stocks.append(newStock)
 
         # stocks = [newStock]
@@ -65,7 +65,7 @@ class Refresh_page(View):
         stocks = []
         for i in range(len(stock_data)):
             newStock = Stock()
-            newStock.name = stock_data['name'].values[i]
-            newStock.file = stock_data['address'].values[i]
+            newStock.name = stock_data[3].values[i]
+            newStock.file = 'Stock' + stock_data[7].values[i][1:]
             stocks.append(newStock)
         return render(req, 'samples.html', {'stocks': stocks})
