@@ -19,5 +19,5 @@ import Stock.views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('stock', Stock.views.Refresh_page.as_view())
+    path('stock/', Stock.views.Refresh_page.as_view())
 ]

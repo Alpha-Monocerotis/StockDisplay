@@ -1,71 +1,49 @@
 from django.shortcuts import render
 from django.http import *
-from Stock.plot.plotStock import generate
+# from Stock.plot.plotStock import generate
 # Create your views here.
 from django.views.generic.base import View
 import pandas as pd
 from .models import Stock
-
-ADDED = '''<form method="post" action="/stock">
-            <label>
-            股票名称
-            </label>
-             <select name="stock-name" id="stock-id">
-                <option value ="请选择">请选择</option>
-                {% for stock in stocks %}
-                <option value ={{ stock.file }}>{{ stock.name }}</option>
-                {% endfor %}
-             </select>
-            <div class="text-center" style="margin-top: 20px">
-            <button type="submit">
-                生成
-            </button>
-            </div>
-            </form>'''
-
+from .plot.plotStock import zheline
+__all__ = ['stock_data', 'TEST_PATH']
 stock_data = pd.read_csv('Stock/data/stocks.csv', encoding='gb18030', header=None)
 
+TEST_PATH = "Stock/data/SH/SH000001.csv"
 
 class Refresh_page(View):
-
+    
     @staticmethod
     def get(req: HttpRequest):
-        with open('templates/sample.html', mode='r') as f:
-            splited = f.read().split(
-                '''style="width:2000px;height:600px;"></div>
-    <script type="text/javascript">''')
-            head_and_plot = splited[0] + '''style="width:2000px;height:600px;"></div>'''
-            tail = '<script type="text/javascript">' + splited[1]
-        with open('templates/samples.html', mode='w') as f:
-            f.write(head_and_plot + ADDED + tail)
-
         stocks = []
         for i in range(len(stock_data)):
             newStock = Stock()
             newStock.name = stock_data[3].values[i]
-            newStock.file = 'Stock' + stock_data[7].values[i][1:]
+            newStock.file = 'Stock' + stock_data[7].values[i][1:] + '%' + newStock.name
             stocks.append(newStock)
 
-        # stocks = [newStock]
-        return render(req, 'samples.html', {'stocks': stocks})
+        return render(req, 'index2.html', {'stocks': stocks})
 
     @staticmethod
     def post(req: HttpRequest):
+        # print(req.POST)
         stock_name = req.POST['stock-name']
-
-        generate(stock_name)
-        with open('templates/sample.html', mode='r') as f:
-            splited = f.read().split(
-                '''style="width:2000px;height:600px;"></div>
-    <script type="text/javascript">''')
-            head_and_plot = splited[0] + '''style="width:2000px;height:600px;"></div>'''
-            tail = '<script type="text/javascript">' + splited[1]
-        with open('templates/samples.html', mode='w') as f:
-            f.write(head_and_plot + ADDED + tail)
+        data = pd.read_csv(stock_name.split('%')[0])
+        # data.info()
         stocks = []
         for i in range(len(stock_data)):
             newStock = Stock()
             newStock.name = stock_data[3].values[i]
-            newStock.file = 'Stock' + stock_data[7].values[i][1:]
+            newStock.file = 'Stock' + stock_data[7].values[i][1:] + '%' + newStock.name
             stocks.append(newStock)
-        return render(req, 'samples.html', {'stocks': stocks})
+        linedata1, value1, linedata2, value2 = zheline(high_value=data['High'].values,low_value=data['Low'].values, datetime=data['Date'].values)
+        # print(len(value1))
+        # print(len(value2))
+        # print(len(linedata1))
+        # print(linedata1[0:50])
+        # data.info()
+        return JsonResponse(data={'status': 'success', 'date': list(data['Date'].values),
+                                  'high': list(data['High'].values), 'low': list(data['Low'].values),
+                                  'close': list(data['Close'].values), 'open': list(data['Open'].values),
+                                  'name': stock_name.split('%')[1], 'upline': value2, 'downline': value1, 'upline_time':linedata2, 'downline_time':linedata1})
+        # return render(req, 'index2.html', {'stocks': stocks, 'date': data['Date'].values[:100], 'kline': data[['Open', 'Close', 'Low', 'High']].values[:100], 'name': stock_name.split('%')[1]})
