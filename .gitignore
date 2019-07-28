@@ -1,0 +1,9 @@
+/venv
+/.vscode
+/.ipynb_checkpoints
+/StockDisplay/__pycache__
+/Stock/__pycache__
+/Stock/migrations
+/.idea
+/.DS_Store
+/Display_using_project.bloc

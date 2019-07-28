@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>股票</title>
+    <script src="/static/echarts.js"></script>
+</head>
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+{#    <form method="post" action="/stock/">#}
+            <label>
+            股票名称
+            </label>
+             <select name="stock-name" id="stock-id">
+                <option value ="请选择">请选择</option>
+                {% for stock in stocks %}
+                <option value ={{ stock.file }}>{{ stock.name }}</option>
+                {% endfor %}
+             </select>
+            <div class="text-center" style="margin-top: 20px">
+            <button type="submit" id="generate">
+                生成
+            </button>
+            </div>
+{#    </form>#}
+    <div title="k线图" style="width: 1920px;height: 900px;border: 1px solid #E0E0E0;" id="kline_1" class=""></div>
+{#<script src="/static/echarts.js"></script>#}
+<script src="/static/jquery.min.js?v=2.1.4"></script>
+<script src="/static/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+<script src="/static/content.js?v=1.0.0"></script>
+<!-- jQuery Validation plugin javascript-->
+<script src="/static/jquery.validate.min.js"></script>
+<script src="/static/messages_zh.min.js"></script>
+<script type="text/javascript">
+		//初始化echarts实例(这里的kline_1要根据自己的div的id进行修改.)
+		var myChart = echarts.init(document.getElementById('kline_1'));
+		myChart.clear();
+
+        $(document).ready(function() {
+                $("#generate").on("click", function() {
+                    var stock_name = $("#stock-id").val();
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/x-www-form-urlencoded",
+                        url: "/stock/",
+                        data: {
+                            "stock-name": stock_name,
+                        },
+                        xhrFields:{
+                            withCredentials:true
+                        },
+                        success: function(data) {
+                            if (data.status === "success") {
+                                // console.log(data);
+                                // var result1 = data.open.map((item,index) => {return [item,data.close[index]]});
+
+
+                                var kline = data.date.map((item,index) => {return [data.close[index], data.open[index], data.low[index], data.high[index]]});
+                                var lowline = data.date.map((item,index) => {return [item, data.low[index]]});
+                                var upline = data.upline.map((item,index) => {return [data.upline_time[index], item]});
+                                var downline = data.downline.map((item,index) => {return [data.downline_time[index], item]});
+                                // console.log(downline);
+                                myChart.setOption({ //加载数据图表
+                                      title: {
+        text: data.name,
+        left: 0
+    },
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'line'
+        }
+    },
+    legend: {
+        data: ['日K', 'HIGH', 'UPLINE', 'DOWNLINE']
+    },
+    grid: {
+        left: '10%',
+        right: '10%',
+        bottom: '15%'
+    },
+    xAxis: {
+        type: 'category',
+        data: data.date,
+        scale: true,
+        boundaryGap: false,
+        axisLine: {
+            onZero: false
+        },
+        splitLine: {
+            show: false
+        },
+        splitNumber: 20,
+        min: 'dataMin',
+        max: 'dataMax'
+    },
+    yAxis: {
+        scale: true,
+        splitArea: {
+            show: true
+        }
+    },
+    dataZoom: [{
+            type: 'inside',
+            start: 80,
+            end: 100
+        },
+        {
+            show: true,
+            type: 'slider',
+            y: '90%',
+            start: 80,
+            end: 100
+        }
+    ],
+    series: [{
+            name: '日K',
+            type: 'candlestick',
+            data: kline,
+            markPoint: {
+                label: {
+                    normal: {
+                        formatter: function(param) {
+                            return param != null ? Math.round(param.value) : '';
+                        }
+                    }
+                },
+                data: [{
+                        name: 'XX标点',
+                        coord: ['2013/5/31', 2300],
+                        value: 2300,
+                        itemStyle: {
+                            normal: {
+                                color: 'rgb(41,60,85)'
+                            }
+                        }
+                    },
+                    {
+                        name: 'highest value',
+                        type: 'max',
+                        valueDim: 'highest'
+                    },
+                    {
+                        name: 'lowest value',
+                        type: 'min',
+                        valueDim: 'lowest'
+                    },
+                    {
+                        name: 'average value on close',
+                        type: 'average',
+                        valueDim: 'close'
+                    }
+                ],
+                tooltip: {
+                    formatter: function(param) {
+                        return param.name + '<br>' + (param.data.coord || '');
+                    }
+                }
+            },
+            markLine: {
+                symbol: ['none', 'none'],
+                data: [
+                    {
+                        name: 'min line on close',
+                        type: 'min',
+                        valueDim: 'close'
+                    },
+                    {
+                        name: 'max line on close',
+                        type: 'max',
+                        valueDim: 'close'
+                    }
+                ]
+            }
+        },
+        {
+            name: 'HIGH',
+            type: 'line',
+            data: data.high,
+            smooth: false,
+            lineStyle: {
+                normal: {
+                    opacity: 0.5
+                }
+            }
+        },
+
+        {
+            name: 'UPLINE',
+            type: 'line',
+            data: upline,
+            smooth: false,
+            lineStyle: {
+                normal: {
+                    opacity: 0.5,
+                    color: '#ffad38'
+                }
+            }
+        },
+        {
+            name: 'DOWNLINE',
+            type: 'line',
+            data: downline,
+            smooth: false,
+            lineStyle: {
+                normal: {
+                    opacity: 0.5
+                }
+            }
+        },
+
+    ]
+                            });
+                            }
+                            else {
+                                alert("提交失败，原因为lmy 在 P站");
+                            }
+                        },
+                        error: function(data) {
+                            alert("提交失败，原因为lmy tql");
+                        }
+                    });
+                    return false;
+                });
+            });
+    </script>
+</body>
