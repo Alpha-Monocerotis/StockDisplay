@@ -6,8 +6,6 @@
     <script src="/static/echarts.js"></script>
 </head>
 <body>
-    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-{#    <form method="post" action="/stock/">#}
             <label>
             股票名称
             </label>
@@ -28,13 +26,11 @@
 <script src="/static/jquery.min.js?v=2.1.4"></script>
 <script src="/static/bootstrap.min.js?v=3.3.6"></script>
 
-    <!-- 自定义js -->
 <script src="/static/content.js?v=1.0.0"></script>
 <!-- jQuery Validation plugin javascript-->
 <script src="/static/jquery.validate.min.js"></script>
 <script src="/static/messages_zh.min.js"></script>
 <script type="text/javascript">
-		//初始化echarts实例(这里的kline_1要根据自己的div的id进行修改.)
 		var myChart = echarts.init(document.getElementById('kline_1'));
 		myChart.clear();
 
