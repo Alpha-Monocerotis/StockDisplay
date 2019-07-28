@@ -40,6 +40,8 @@ class Refresh_page(View):
                 JsonResponse: JSON response with data.
             Raises:
                 None
+        Examples:
+            None
         """
             Tested: False
         stock_name = req.POST['stock-name']
