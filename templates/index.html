@@ -37,7 +37,7 @@
 					<div class="collapse navbar-collapse navbar-35283">
 						<ul class="site-navigation nav navbar-nav ml-auto">
 							<li class="nav-item">
-								<a href="../Sites" class="nav-link">Home</a>
+								<a href="/stock/" class="nav-link">Explore</a>
 							</li>
 						</ul>
 					</div>
@@ -519,7 +519,7 @@
                             // var result1 = data.open.map((item,index) => {return [item,data.close[index]]});
 
 
-                            var kline = data.date.map((item,index) => {return [data.close[index], data.open[index], data.low[index], data.high[index]]});
+                            var kline = data.date.map((item,index) => {return [data.open[index], data.close[index], data.low[index], data.high[index]]});
                             {#var lowline = data.date.map((item,index) => {return [item, data.low[index]]});#}
                             var upline = data.upline.map((item,index) => {return [data.upline_time[index], item]});
                             var downline = data.downline.map((item,index) => {return [data.downline_time[index], item]});
@@ -536,7 +536,7 @@ tooltip: {
     }
 },
 legend: {
-    data: ['5分钟K', 'HIGH', 'UPLINE', 'DOWNLINE']
+    data: ['5 MINUTES K', 'HIGH', 'UPLINE', 'DOWNLINE']
 },
 grid: {
     left: '10%',
@@ -578,7 +578,7 @@ dataZoom: [{
     }
 ],
 series: [{
-        name: '5分钟K',
+        name: '5 MINUTES K',
         type: 'candlestick',
         data: kline,
         markPoint: {
