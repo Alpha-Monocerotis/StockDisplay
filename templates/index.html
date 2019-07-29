@@ -210,7 +210,6 @@
     myChart.clear();
 
     $(document).ready(function() {
-    {#var myChart = echarts.init(document.getElementById('kline_1'));#}
     var data0 = splitData([
         ['2013/1/24', 2320.26, 2320.26, 2287.3, 2362.94],
         ['2013/1/25', 2300, 2291.3, 2288.26, 2308.38],
@@ -520,7 +519,6 @@
 
 
                             var kline = data.date.map((item,index) => {return [data.open[index], data.close[index], data.low[index], data.high[index]]});
-                            {#var lowline = data.date.map((item,index) => {return [item, data.low[index]]});#}
                             var upline = data.upline.map((item,index) => {return [data.upline_time[index], item]});
                             var downline = data.downline.map((item,index) => {return [data.downline_time[index], item]});
                             // console.log(downline);
