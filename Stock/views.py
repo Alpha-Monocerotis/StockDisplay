@@ -32,8 +32,6 @@ class Refresh_page(View):
                     scopes.append(str(i) + '-' + str(j))
         return render(req, 'index.html', {'stocks': stocks, 'scopes': scopes})
 
-
-
     @staticmethod
     def post(req: HttpRequest):
         stock_name = req.POST['stock-name']
