@@ -16,8 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 import Stock.views
-
+# TODO: When integrating other Applications, remember to use include to divide their  service urlpatterns [2019.07.29].
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('stock/', Stock.views.Refresh_page.as_view())
+    path('stock/', Stock.views.Refresh_page.as_view()),
 ]

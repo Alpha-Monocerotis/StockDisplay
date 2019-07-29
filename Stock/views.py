@@ -27,12 +27,14 @@ class Refresh_page(View):
                     scopes.append(str(i) + '-0' + str(j))
                 else:
                     scopes.append(str(i) + '-' + str(j))
+                # Here we plus a 0 infront of every single month digit to resolve the dict index problem.
         return render(req, 'index.html', {'stocks': stocks, 'scopes': scopes})
 
     @staticmethod
     def post(req: HttpRequest):
         stock_name = req.POST['stock-name']
         data = pd.read_csv(TEST_PATH)
+        # In a prodictive environment, you are supposed to use stock_name.split('%')[0] to replace the TEST_PATH
         view_scope_start = req.POST['scope-start']
         view_scope_end = req.POST['scope-end']
         for i in range(1, 10):
@@ -43,6 +45,7 @@ class Refresh_page(View):
             view_scope_start = tmp
         elif view_scope_start == view_scope_end:
             raise BaseException("You appoint a very cramped scope which may be meaningless!")
+            # We don't allow users to specify a scope whose start is the same as the end.
         data = data[data.Date > view_scope_start]
         data = data[data.Date < view_scope_end]
         linedata1, value1, linedata2, value2 = zheline(high_value=data['High'].values, low_value=data['Low'].values, datetime=data['Date'].values)
