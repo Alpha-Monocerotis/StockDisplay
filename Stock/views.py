@@ -70,13 +70,6 @@ class Refresh_page(View):
         data = data[data.Date < view_scope_end]
         linedata1, value1, linedata2, value2 = zheline(high_value=data['High'].values, low_value=data['Low'].values, datetime=data['Date'].values)
         return JsonResponse(data={'status': 'success', 'date': list(data['Date'].values),'high': list(data['High'].values), 'low': list(data['Low'].values),'close': list(data['Close'].values), 'open': list(data['Open'].values),'name': stock_name.split('%')[1], 'upline': value2, 'downline': value1, 'upline_time':linedata2, 'downline_time':linedata1})
-<<<<<<< HEAD
-        
-=======
-
-
-
->>>>>>> c4f78c45fbe4db84a3464fbcce12443777194b0b
     @staticmethod
     def post_scope(req: HttpRequest):
         """
