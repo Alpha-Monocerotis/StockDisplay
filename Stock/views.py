@@ -1,13 +1,10 @@
 from django.shortcuts import render
 from django.http import *
-# from Stock.plot.plotStock import generate
-# Create your views here.
 from django.views.generic.base import View
 from time import localtime
 import pandas as pd
 from .models import Stock
 from .plot.plotStock import zheline
-__all__ = ['stock_name_list', 'TEST_PATH']
 stock_name_list = pd.read_csv('Stock/data/stocks.csv', encoding='gb18030', header=None)
 # Get stock name and filepath list from csv file.
 TEST_PATH = "Stock/data/SH/SH000001.csv"
