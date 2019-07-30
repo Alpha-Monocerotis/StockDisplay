@@ -5,7 +5,6 @@ from time import localtime
 import pandas as pd
 from .models import Stock
 from .plot.plotStock import zheline
-stock_name_list = pd.read_csv('Stock/data/stocks.csv', encoding='gb18030', header=None)
 # Get stock name and filepath list from csv file.
 TEST_PATH = "Stock/data/SH/SH000001.csv"
 # TEST_PATH is for testing.
@@ -13,6 +12,7 @@ TEST_PATH = "Stock/data/SH/SH000001.csv"
 class Refresh_page(View):
     @staticmethod
     def get(req: HttpRequest):
+        stock_name_list = pd.read_csv('Stock/data/stocks.csv', encoding='gb18030', header=None)
         stocks = []
         for i in range(len(stock_name_list)):
             newStock = Stock()
@@ -27,14 +27,17 @@ class Refresh_page(View):
                     scopes.append(str(i) + '-0' + str(j))
                 else:
                     scopes.append(str(i) + '-' + str(j))
-                # Here we plus a 0 infront of every single month digit to resolve the dict index problem.
-        return render(req, 'index.html', {'stocks': stocks, 'scopes': scopes})
+                # Here we plus a 0 in front of every single month digit to resolve the dict index problem.
+        data = pd.read_csv(TEST_PATH)[0:5000]
+        linedata1, value1, linedata2, value2 = zheline(high_value=data['High'].values, low_value=data['Low'].values, datetime=data['Date'].values)
 
+        return render(req, 'index.html', {'stocks': stocks, 'scopes': scopes, 'date': list(data['Date'].values),'high': list(data['High'].values), 'low': list(data['Low'].values),'close': list(data['Close'].values), 'open': list(data['Open'].values),'name': '上证指数', 'upline': value2, 'downline': value1, 'upline_time':linedata2, 'downline_time':linedata1})
+        
     @staticmethod
     def post(req: HttpRequest):
         stock_name = req.POST['stock-name']
-        data = pd.read_csv(TEST_PATH)
-        # In a prodictive environment, you are supposed to use stock_name.split('%')[0] to replace the TEST_PATH
+        data = pd.read_csv(stock_name.split('%')[0])
+        # In a prodictive ensvironment, you are supposed to use stock_name.split('%')[0] to replace the TEST_PATH
         view_scope_start = req.POST['scope-start']
         view_scope_end = req.POST['scope-end']
         for i in range(1, 10):
